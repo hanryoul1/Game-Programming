@@ -102,8 +102,17 @@ class SnakeGame:
                 if msvcrt.kbhit():
                     current = SnakeGame.GetDirection()
                 
-            # 
-              
+                # Codes 실습1
+                if SnakeGame.direction != "DOWN":
+                    SnakeGame.direction = "UP"
+            
+                if SnakeGame.direction != "UP":
+                    SnakeGame.direction = "DOWN"
+
+                ret = current
+                # 진행방향 반대방향 다르면 아무처리X, 이전 정보 갖고 있음, CURRENT값을 마지막에 RET에 저장
+                # 이전과 현재 비교, 갱신(이동할 때 머리와 꼬리 수정/벽 충돌, 먹이 섭취 유무에 따라 다름)
+            
             self.DrawScene()
             print("Score: {}".format(self.snake.length - self.initLen))
 
