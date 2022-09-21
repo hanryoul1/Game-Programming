@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 class GameObject(object):
     def __init__(self, canvas, item):
         self.canvas = canvas
@@ -193,8 +192,6 @@ class Game(tk.Frame):
         items = self.canvas.find_overlapping(*ball_coords)
         objects = [self.items[x] for x in items if x in self.items]
         self.ball.collide(objects)
-
-
 
 if __name__ == '__main__':
     root = tk.Tk()
