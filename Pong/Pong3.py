@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 class GameObject(object):
     def __init__(self, canvas, item):
         self.canvas = canvas
@@ -58,14 +59,14 @@ class Ball(GameObject):
 
 class Paddle(GameObject):
     def __init__(self, canvas, x, y):
-        self.width = 80
+        self.width = 90
         self.height = 10
         self.ball = None
         item = canvas.create_rectangle(x - self.width / 2,
                                        y - self.height / 2,
                                        x + self.width / 2,
                                        y + self.height / 2,
-                                       fill='blue')
+                                       fill='darkblue')
         super(Paddle, self).__init__(canvas, item)
 
     def set_ball(self, ball):
@@ -110,7 +111,7 @@ class Game(tk.Frame):
         self.lives = 3
         self.width = 610
         self.height = 400
-        self.canvas = tk.Canvas(self, bg='#aaaaff',
+        self.canvas = tk.Canvas(self, bg='brown',
                                 width=self.width,
                                 height=self.height,)
         self.canvas.pack()
@@ -129,9 +130,9 @@ class Game(tk.Frame):
         self.setup_game()
         self.canvas.focus_set()
         self.canvas.bind('<Left>',
-                         lambda _: self.paddle.move(-10))
+                         lambda _: self.paddle.move(-20))
         self.canvas.bind('<Right>',
-                         lambda _: self.paddle.move(10))
+                         lambda _: self.paddle.move(20))
 
     def setup_game(self):
            self.add_ball()
@@ -192,6 +193,8 @@ class Game(tk.Frame):
         items = self.canvas.find_overlapping(*ball_coords)
         objects = [self.items[x] for x in items if x in self.items]
         self.ball.collide(objects)
+
+
 
 if __name__ == '__main__':
     root = tk.Tk()
