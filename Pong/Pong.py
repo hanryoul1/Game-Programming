@@ -1,8 +1,9 @@
 import tkinter as tk
+#from tkinter import PhotoImage, ttk
 
 class GameObject(object):
     def __init__(self, canvas, item):
-        self.canvas = canvas
+        self.canvas = canvas 
         self.item = item
 
     def get_position(self):
@@ -20,10 +21,16 @@ class Ball(GameObject):
         self.radius = 10
         self.direction = [1, -1]
         self.speed = 10
-        item = canvas.create_oval(x-self.radius, y-self.radius,
-                                  x+self.radius, y+self.radius,
-                                  fill='white')
+
+        self.img = tk.PhotoImage(file = 'C:\\Users\\한률\\Desktop\\경희대\\게임프로그래밍입문\\image\\ball2.png') # self.img 
+        item = canvas.create_image(x, y, image = self.img) # create_image
         super(Ball, self).__init__(canvas, item)
+
+    def get_position(self): # overriding
+        pos = self.canvas.coords(self.item)
+        ball_pos = [pos[0]-self.radius, pos[1]-self.radius,
+                    pos[0]-self.radius, pos[1]-self.radius]
+        return ball_pos
 
     def update(self):
         coords = self.get_position()
@@ -176,6 +183,7 @@ class Game(tk.Frame):
         if num_bricks == 0: 
             self.ball.speed = None
             self.draw_text(300, 200, 'You win!')
+
         elif self.ball.get_position()[3] >= self.height: 
             self.ball.speed = None
             self.lives -= 1
