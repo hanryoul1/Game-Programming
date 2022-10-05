@@ -1,5 +1,5 @@
+# Pong_image
 import tkinter as tk
-#from tkinter import PhotoImage, ttk
 
 class GameObject(object):
     def __init__(self, canvas, item):
