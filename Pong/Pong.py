@@ -1,9 +1,9 @@
-# Pong_image
 import tkinter as tk
+import random
 
 class GameObject(object):
     def __init__(self, canvas, item):
-        self.canvas = canvas 
+        self.canvas = canvas
         self.item = item
 
     def get_position(self):
@@ -15,18 +15,16 @@ class GameObject(object):
     def delete(self):
         self.canvas.delete(self.item)
 
-
 class Ball(GameObject):
     def __init__(self, canvas, x, y):
         self.radius = 10
         self.direction = [1, -1]
         self.speed = 10
-
         self.img = tk.PhotoImage(file = 'C:\\Users\\한률\\Desktop\\경희대\\게임프로그래밍입문\\image\\ball2.png') # self.img 
-        item = canvas.create_image(x, y, image = self.img) # create_image
+        item = canvas.create_image(x, y, image = self.img) ## create_image
         super(Ball, self).__init__(canvas, item)
 
-    def get_position(self): # overriding
+    def get_position(self): ## overriding
         pos = self.canvas.coords(self.item)
         ball_pos = [pos[0]-self.radius, pos[1]-self.radius,
                     pos[0]-self.radius, pos[1]-self.radius]
@@ -44,16 +42,16 @@ class Ball(GameObject):
         self.move(x, y)
 
     def collide(self, game_objects):
-        coords = self.get_position()
-        x = (coords[0] + coords[2]) * 0.5
+        x = self.get_position() # ball의 좌표를 받음 / x1, y1, x2, y2
+        
         if len(game_objects) > 1:
             self.direction[1] *= -1
         elif len(game_objects) == 1:
             game_object = game_objects[0]
             coords = game_object.get_position()
-            if x > coords[2]:
+            if x[0] > coords[2]:
                 self.direction[0] = 1
-            elif x < coords[0]:
+            elif x[2] < coords[0]:
                 self.direction[0] = -1
             else:
                 self.direction[1] *= -1
@@ -94,7 +92,10 @@ class Brick(GameObject):
         self.width = 75
         self.height = 20
         self.hits = hits
-        color = Brick.COLORS[hits]
+        if self.hits > 3:
+           color = Brick.COLORS[3]
+        else:
+            color = Brick.COLORS[hits]
         item = canvas.create_rectangle(x - self.width / 2,
                                        y - self.height / 2,
                                        x + self.width / 2,
@@ -117,6 +118,7 @@ class Game(tk.Frame):
         self.lives = 3
         self.width = 610
         self.height = 400
+        self.level = 1
         self.canvas = tk.Canvas(self, bg='#aaaaff',
                                 width=self.width,
                                 height=self.height,)
@@ -127,10 +129,9 @@ class Game(tk.Frame):
         self.ball = None
         self.paddle = Paddle(self.canvas, self.width/2, 326)
         self.items[self.paddle.item] = self.paddle
-        for x in range(5, self.width - 5, 75):
-            self.add_brick(x + 37.5, 50, 2)
-            self.add_brick(x + 37.5, 70, 1)
-            self.add_brick(x + 37.5, 90, 1)
+        self.setup_level()
+
+        ## for문 삭제
 
         self.hud = None
         self.setup_game()
@@ -141,11 +142,35 @@ class Game(tk.Frame):
                          lambda _: self.paddle.move(10))
 
     def setup_game(self):
-           self.add_ball()
-           self.update_lives_text()
-           self.text = self.draw_text(300, 200,
-                                      'Press Space to start')
-           self.canvas.bind('<space>', lambda _: self.start_game())
+        ## try&except -> 레벨업 시 화면 변동
+        try:
+            self.canvas.delete(self.level_up_text)
+        except:
+            pass
+        self.add_ball()
+        self.update_lives_text()
+        self.text = self.draw_text(300, 200,
+                                   'Press Space to start')
+
+        ## brick 0개 -> Level Up
+        try:
+            if self.num_bricks == 0:
+                self.setup_level()
+        except:
+            pass
+        ## <space> 눌러서 다음 레벨 시작
+        self.canvas.bind('<space>', lambda _: self.start_game())
+
+    ## 단게별 벽돌 층수 설정 및 brick 수 랜덤 설정
+    def setup_level(self):
+
+        for level in range(1, self.level+1):
+            for x in range(5, self.width - 5, 75):
+                self.add_brick(42.5 + 75 * (random.randint(0, 9) % 8),
+                               30+level*20, min(3, self.level-level+1))
+                # self.add_brick(x + 37.5, 50, 2)
+                # self.add_brick(x + 37.5, 70, 1)
+                # self.add_brick(x + 37.5, 30+level*20, 1)
 
     def add_ball(self):
         if self.ball is not None:
@@ -157,7 +182,9 @@ class Game(tk.Frame):
 
     def add_brick(self, x, y, hits):
         brick = Brick(self.canvas, x, y, hits)
-        self.items[brick.item] = brick
+        ## 벽돌 생성 위치에 기존 벽돌 유무 확인
+        if self.items.get(brick.item) is None:
+            self.items[brick.item] = brick
 
     def draw_text(self, x, y, text, size='40'):
         font = ('Helvetica', size)
@@ -165,9 +192,10 @@ class Game(tk.Frame):
                                        font=font)
 
     def update_lives_text(self):
-        text = 'Lives: %s' % self.lives
+        ## 좌측 상단에 Lives와 Level 기재
+        text = 'Lives: %s    Level: %d' % (self.lives, self.level)
         if self.hud is None:
-            self.hud = self.draw_text(50, 20, text, 15)
+            self.hud = self.draw_text(90, 20, text, 15)
         else:
             self.canvas.itemconfig(self.hud, text=text)
 
@@ -179,12 +207,16 @@ class Game(tk.Frame):
 
     def game_loop(self):
         self.check_collisions()
-        num_bricks = len(self.canvas.find_withtag('brick'))
-        if num_bricks == 0: 
+        self.num_bricks = len(self.canvas.find_withtag('brick'))
+        if self.num_bricks == 0:
             self.ball.speed = None
-            self.draw_text(300, 200, 'You win!')
+            ## level up 시, 문구 설정
+            self.level_up_text = self.draw_text(
+                300, 200, 'Press space to level up!')
+            self.level += 1
+            self.canvas.bind('<space>', lambda _: self.setup_game())
 
-        elif self.ball.get_position()[3] >= self.height: 
+        elif self.ball.get_position()[3] >= self.height:
             self.ball.speed = None
             self.lives -= 1
             if self.lives < 0:
