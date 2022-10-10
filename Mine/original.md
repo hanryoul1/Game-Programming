@@ -47,4 +47,4 @@ def detect_region(self, x, y):
             if y+yy < 0: continue
             if y+yy >= self.row: continue
             if self.pattern[y+yy][x+xx][2] != 0: continue
-            self.detect_region(x+xx, y+yy)
+            self.detect_region(x+xx, y+yy) 
