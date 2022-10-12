@@ -33,7 +33,7 @@ class PlayerCannon(Actor):
     KEYS_PRESSED = defaultdict(int)
 
     def __init__(self, x, y):
-        super(PlayerCannon, self).__init__('C:\\Users\\한률\\Desktop\\경희대\\게임프로그래밍입문\\image\\cannon.png', x, y)
+        super(PlayerCannon, self).__init__('C:\\Users\\한률\\Desktop\\IGP\\Game-Programming\\Cocos2d\\image\\cannon.png', x, y)
         self.speed = eu.Vector2(200, 0)
 
     def update(self, elapsed):
@@ -137,9 +137,9 @@ class Alien(Actor):
         return Animation.from_image_sequence(seq, 0.5)
     
     TYPES = {
-        '1': (load_animation('C:\\Users\\한률\\Desktop\\경희대\\게임프로그래밍입문\\image\\alien1.png'), 40),
-        '2': (load_animation('C:\\Users\\한률\\Desktop\\경희대\\게임프로그래밍입문\\image\\alien2.png'), 20),
-        '3': (load_animation('C:\\Users\\한률\\Desktop\\경희대\\게임프로그래밍입문\\image\\alien3.png'), 10)
+        '1': (load_animation('C:\\Users\\한률\\Desktop\\IGP\\Game-Programming\\Cocos2d\\image\\alien1.png'), 40),
+        '2': (load_animation('C:\\Users\\한률\\Desktop\\IGP\\Game-Programming\\Cocos2d\\image\\alien2.png'), 20),
+        '3': (load_animation('C:\\Users\\한률\\Desktop\\IGP\\Game-Programming\\Cocos2d\\image\\alien3.png'), 10)
     }
 
     def from_type(x, y, alien_type, column):
@@ -209,7 +209,7 @@ class AlienGroup(object):
                 yield alien
 
 class Shoot(Actor):
-    def __init__(self, x, y, img='C:\\Users\\한률\\Desktop\\경희대\\게임프로그래밍입문\\image\\shoot.png'):
+    def __init__(self, x, y, img='C:\\Users\\한률\\Desktop\\IGP\\Game-Programming\\Cocos2d\\image\\shoot.png'):
         super(Shoot, self).__init__(img, x, y)
         self.speed = eu.Vector2(0, -400)
 
@@ -220,7 +220,7 @@ class PlayerShoot(Shoot):
     INSTANCE = None
 
     def __init__(self, x, y):
-        super(PlayerShoot, self).__init__(x, y, 'C:\\Users\\한률\\Desktop\\경희대\\게임프로그래밍입문\\image\\laser.png')
+        super(PlayerShoot, self).__init__(x, y, 'C:\\Users\\한률\\Desktop\\IGP\\Game-Programming\\Cocos2d\\image\\laser.png')
         self.speed *= -1
         PlayerShoot.INSTANCE = self
 
@@ -264,7 +264,7 @@ class MysteryShip(Alien):
 
     def __init__(self, x, y):
         score = random.choice(MysteryShip.SCORES)
-        super(MysteryShip, self).__init__('C:\\Users\\한률\\Desktop\\경희대\\게임프로그래밍입문\\image\\alien4.png', x, y, 
+        super(MysteryShip, self).__init__('C:\\Users\\한률\\Desktop\\IGP\\Game-Programming\\Cocos2d\\image\\alien4.png', x, y, 
                                           score)
         self.speed = eu.Vector2(150, 0)
 
