@@ -16,7 +16,7 @@ tk.messagebox.showinfo('Win', 'You win!')
 
 # 3차원 행렬 사용
 import numpy as np # pip install numpy
-pattern = np.arange(5*5*5).reshape(5, 5, 5)
+pattern = np.arange(5*5*5).reshape(5, 5, 5)    # (층,행,열)
 pattern[0][0][0] = 10
 pattern = [[[0]*5 for i in range(5)] for k in range(5)]
 
