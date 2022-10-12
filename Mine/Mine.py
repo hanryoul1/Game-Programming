@@ -125,25 +125,6 @@ class GameBoard:
     def unpackBoard(self):
         self.board.pack_forget() 
 
-# def gameStart(canvas):
-#     global game     # 전역변수 game 사용
-
-#     if game is not None:
-#         game.unpackBoard()      # 실행 중이던 게임이 있으면 화면에서 지움
-
-#     if level.get() == 0:
-#         w = 9
-#         h = 9
-#         mine = 10
-#     elif level.get() == 1:
-#         w = 16
-#         h = 16
-#         mine = 40
-#     else:
-#         w = 30
-#         h = 16
-#         mine = 99
-
 def gameStart_level1(canvas):
     global game     # 전역변수 game 사용
 
@@ -243,6 +224,55 @@ winLose = tk.Label(master, text='', anchor=tk.CENTER, font=winLoseFont)         
 uiPlace(9, 9) # mainWindow 위젯 배치 함수
 
 
+
+"""
+# 3차원 행렬 사용
+pattern = np.arange(5*5*5).reshape(5, 5, 5)
+pattern[0][0][0] = 10
+pattern = [[[0]*5 for i in range(5)] for k in range(5)]
+
+# Recursion
+def F(n):
+    print(n%10)
+    if n//10 > 0:
+        F(n//10)
+F(123)
+
+# 재귀함수
+def detect_region(self, x, y):
+    for yy in range(-1, 2):
+        for xx in range(-1, 2):
+            if x+xx < 0: continue
+            if x+xx >= self.column: continue
+            if y+yy < 0: continue
+            if y+yy >= self.row: continue
+            if self.pattern[y+yy][x+xx][2] != 0: continue
+
+            self.detect_region(x+xx, y+yy)
+"""
+
+
+""" 
+def gameStart(canvas):
+    global game     # 전역변수 game 사용
+
+    if game is not None:
+        game.unpackBoard()      # 실행 중이던 게임이 있으면 화면에서 지움
+
+    if level.get() == 0:
+        w = 9
+        h = 9
+        mine = 10
+    elif level.get() == 1:
+        w = 16
+        h = 16
+        mine = 40
+    else:
+        w = 30
+        h = 16
+        mine = 99 
+"""
+
 """
 master.title("Hello, Mine!")
 canvas = Canvas(master, width = 200, height = 150 )
@@ -272,30 +302,3 @@ defaultFont = tk.font.Font(family='맑은 고딕', size=10, weight='bold')
 mainWindow.option_add("*Font", defaultFont)             # mainWindow 기본 폰트 지정
 
 """
-
-
-"""
-# 3차원 행렬 사용
-pattern = np.arange(5*5*5).reshape(5, 5, 5)
-pattern[0][0][0] = 10
-pattern = [[[0]*5 for i in range(5)] for k in range(5)]
-
-# Recursion
-def F(n):
-    print(n%10)
-    if n//10 > 0:
-        F(n//10)
-F(123)
-
-# 재귀함수
-def detect_region(self, x, y):
-    for yy in range(-1, 2):
-        for xx in range(-1, 2):
-            if x+xx < 0: continue
-            if x+xx >= self.column: continue
-            if y+yy < 0: continue
-            if y+yy >= self.row: continue
-            if self.pattern[y+yy][x+xx][2] != 0: continue
-
-            self.detect_region(x+xx, y+yy)
-            """
