@@ -114,7 +114,7 @@ class GameBoard:
 
 
     def lose(self):
-        tk.messagebox.showinfo('LOSE', 'You lose..')
+        tk.messagebox.showinfo('Lose', 'You lose..')
         self.disabled = True
         
 
@@ -214,7 +214,7 @@ master.mainloop()
 
 """ mainCanvas 의 GUI 구성 """ 
 mainCanvas = tk.Canvas(master, width=10 * TILE_SIZE, height=10 * TILE_SIZE, padx=11, pady=11, relief='sunken', bd=1)
-mainCanvas.pack_propagate(False)     # 게임이 들어갈 mainFrame 생성
+mainCanvas.pack_propagate(False)     # 게임이 들어갈 mainCanvas 생성
 
 winLoseFont = tk.font.Font(family='맑은 고딕', size=14, weight='bold')
 winLose = tk.Label(master, text='', anchor=tk.CENTER, font=winLoseFont)         # 승, 패 표시 라벨 생성
