@@ -2,6 +2,8 @@
 import random
 from collections import defaultdict
 from pyglet.image import load, ImageGrid, Animation
+# 이미지 애니메이션을 위한 모듈 추가
+
 from pyglet.window import key
 import cocos.layer
 import cocos.sprite
@@ -14,14 +16,17 @@ class Actor(cocos.sprite.Sprite):
         super(Actor, self).__init__(image)
         self.position = eu.Vector2(x, y)
         self.cshape = cm.AARectShape(self.position, self.width * 0.5, self.height * 0.5)
-
+    
+    # 이동이 있는 경우 offset만큼 더 이동
     def move(self, offset):
         self.position += offset
         self.cshape.center += offset
 
+    # 시간
     def update(self, elapsed):
         pass
-
+    
+    # 충돌에 대한 처리
     def collide(self, other):
         pass
 
@@ -36,22 +41,35 @@ class PlayerCannon(Actor):
     def update(self, elapsed):
         pressed = PlayerCannon.KEYS_PRESSED
         space_pressed = pressed[key.SPACE] == 1
+        # 스페이스가 눌러진 경우, space_pressed가 True값을 가짐
         if PlayerShoot.INSTANCE is None and space_pressed:
+            #PlayerShoot 클래스의 멤버인 객체가 없고 스페이스가 눌러진 경우
             self.parent.add(PlayerShoot(self.x, self.y + 50))
-
-        movement = pressed[key.RIGHT] - pressed[key.LEFT]
+            #Actor에 총알 추가
+        
         w = self.width * 0.5
+        movement = pressed[key.RIGHT] - pressed[key.LEFT]
+        # RIGHT만 누른경우 x==1, LEFT만 누른 경우 x==-1
+        # 둘다 누른 경우 x == 0, 둘다 안 누른 경우 x ==0
+        
         if movement != 0 and w <= self.x <= self.parent.width - w:
             self.move(self.speed * movement * elapsed)
+            # if문 바꾸어 실습 진행
             # 좌/우 벽면으로 이동시 오류 발생
             # 현재 상태가 아닌, 미래 상태를 기준으로 변경
             # 오류 해결, 미사일 연사 가능, 자유롭게 기능 향상
+
+        # if self.x < 0:
+        #     self.x = 30
+        
+        # elif self.x > self.width - w:
+        #      self.x = self.width - w
 
     def collide(self, other):
         other.kill()
         self.kill()
 
-"""GameLayer"""
+"""GameLayer""" # 레이어와 텍스트를 제외한 실제 화면
 class GameLayer(cocos.layer.Layer):
     is_event_handler = True
 
@@ -233,7 +251,7 @@ class PlayerShoot(Shoot):
         super(PlayerShoot, self).on_exit()
         PlayerShoot.INSTANCE = None
 
-"""HUD"""
+"""HUD""" # 점수, 라이프, 텍스트 등 출력
 class HUD(cocos.layer.Layer):
     def __init__(self):
         super(HUD, self).__init__()
