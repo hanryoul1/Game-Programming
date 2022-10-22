@@ -4,6 +4,7 @@ from collections import defaultdict
 from pyglet.image import load, ImageGrid, Animation
 # 이미지 애니메이션을 위한 모듈 추가
 
+import time # time_out 구현
 from pyglet.window import key
 import cocos.layer
 import cocos.sprite
@@ -88,8 +89,11 @@ class GameLayer(cocos.layer.Layer):
         self.height = h
         self.lives = 3
         self.score = 0
+        # self.start_time = int(time.time())
+        self.time = 100
         self.update_score()
         self.create_player()
+        self.update_time()
         self.create_alien_group(100, 300)
         cell = 1.25 * 50
         self.collman = cm.CollisionManagerGrid(0, w, 0, h, cell, cell)
@@ -105,9 +109,14 @@ class GameLayer(cocos.layer.Layer):
         self.hud.update_score(self.score)
         
         # 성능향상_1
-        # ailen_group 전부 처리 -> Game Clear
+        # 목표 점수 1000점 달성 -> Game Clear
         if self.score >= 1000:
             self.hud.show_game_clear()
+
+    # 성능향상_2
+    # time_out 설정 -> Time Over
+    def update_time(self, time=100):
+        self.hud.update_time(self.time)
 
     def create_alien_group(self, x, y):
         self.alien_group = AlienGroup(x, y)
@@ -154,6 +163,11 @@ class GameLayer(cocos.layer.Layer):
             self.hud.show_game_over()
         else:
             self.create_player()
+
+    def time_out(self, time):
+        if time <= 0:
+            self.unschedule(self.update)
+            self.hud.show_time_out()
 
 """Alien"""
 class Alien(Actor):
@@ -223,7 +237,7 @@ class AlienGroup(object):
             offset = self.direction * self.speed
             if self.side_reached():
                 self.direction *= -1
-                offset = eu.Vector2(0, -10)
+                offset = eu.Vector2(0, -100) # (-10 -> -100)으로 변경
             for alien in self:
                 alien.move(offset)
 
@@ -250,8 +264,8 @@ class PlayerShoot(Shoot):
 
     def __init__(self, x, y):
         super(PlayerShoot, self).__init__(x, y, 'Cocos/laser.png')
-        self.speed *= -1
-        PlayerShoot.INSTANCE = self
+        self.speed *= random.choice([-1, -1.5, -2, -2.5]) # 성능향상_3 : laser 랜덤 발사 -> 난이도 향상   
+        PlayerShoot.INSTANCE = self                       # (self.speed *=) -1 -> random.choice([-1, -1.5, -2, -2.5])
 
     def collide(self, other):
         if isinstance(other, Alien):
@@ -269,17 +283,23 @@ class HUD(cocos.layer.Layer):
         super(HUD, self).__init__()
         w, h = cocos.director.director.get_window_size()
         self.score_text = cocos.text.Label('', font_size=18)
-        self.score_text.position = (20, h - 40)
+        self.score_text.position = (150, h - 40)
         self.lives_text = cocos.text.Label('', font_size=18)
-        self.lives_text.position = (w - 100, h - 40)
+        self.lives_text.position = (w - 120, h - 40)
+        self.time_text = cocos.text.Label('', font_size=18) # time_text
+        self.time_text.position = (20, h - 40)
         self.add(self.score_text)
         self.add(self.lives_text)
+        self.add(self.time_text)
 
     def update_score(self, score):
         self.score_text.element.text = 'Score: %s' % score
 
     def update_lives(self, lives):
         self.lives_text.element.text = 'Lives: %s' % lives
+
+    def update_time(self, time):
+        self.time_text.element.text = 'Time: %s' % time
 
     def show_game_over(self):
         w, h = cocos.director.director.get_window_size()
@@ -292,6 +312,14 @@ class HUD(cocos.layer.Layer):
     def show_game_clear(self):
         w, h = cocos.director.director.get_window_size()
         game_clear = cocos.text.Label('Game Clear', font_size=50,
+                                     anchor_x='center',
+                                     anchor_y='center')
+        game_clear.position = w * 0.5, h * 0.5
+        self.add(game_clear)
+
+    def show_time_out(self):
+        w, h = cocos.director.director.get_window_size()
+        game_clear = cocos.text.Label('Time Out', font_size=50,
                                      anchor_x='center',
                                      anchor_y='center')
         game_clear.position = w * 0.5, h * 0.5
