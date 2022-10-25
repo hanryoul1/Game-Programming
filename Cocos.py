@@ -11,6 +11,8 @@ import cocos.sprite
 import cocos.collision_model as cm
 import cocos.euclid as eu
 
+start_time = int(time.time())
+
 """Actor"""
 class Actor(cocos.sprite.Sprite):
     def __init__(self, image, x, y):
@@ -55,16 +57,16 @@ class PlayerCannon(Actor):
         
         if movement != 0 and w <= self.x <= self.parent.width - w:
             self.move(self.speed * movement * elapsed)
+
+            if self.x <= w:
+                self.x = w
+            if self.x >= self.parent.width - w:
+                self.x = self.parent.width - w
+
             # if문 바꾸어 실습 진행
             # 좌/우 벽면으로 이동시 오류 발생
             # 현재 상태가 아닌, 미래 상태를 기준으로 변경
             # 오류 해결, 미사일 연사 가능, 자유롭게 기능 향상
-
-        # if self.x < 0:
-        #     self.x = 30
-        
-        # elif self.x > self.width - w:
-        #      self.x = self.width - w
 
     def collide(self, other):
         other.kill()
@@ -89,8 +91,7 @@ class GameLayer(cocos.layer.Layer):
         self.height = h
         self.lives = 3
         self.score = 0
-        # self.start_time = int(time.time())
-        self.time = 100
+        self.remain_time = 100 #- (int(time.time()) - start_time)
         self.update_score()
         self.create_player()
         self.update_time()
@@ -111,12 +112,17 @@ class GameLayer(cocos.layer.Layer):
         # 성능향상_1
         # 목표 점수 1000점 달성 -> Game Clear
         if self.score >= 1000:
+            self.unschedule(self.update)
             self.hud.show_game_clear()
 
     # 성능향상_2
     # time_out 설정 -> Time Over
-    def update_time(self, time=100):
-        self.hud.update_time(self.time)
+    def update_time(self, remain_time=100):
+        #self.remain_time -= (int(time.time()) - start_time)
+        self.hud.update_time(self.remain_time)
+        
+        # if self.remain_time <= 0:
+        #     self.hud.show_time_out()
 
     def create_alien_group(self, x, y):
         self.alien_group = AlienGroup(x, y)
@@ -163,11 +169,6 @@ class GameLayer(cocos.layer.Layer):
             self.hud.show_game_over()
         else:
             self.create_player()
-
-    def time_out(self, time):
-        if time <= 0:
-            self.unschedule(self.update)
-            self.hud.show_time_out()
 
 """Alien"""
 class Alien(Actor):
@@ -237,7 +238,7 @@ class AlienGroup(object):
             offset = self.direction * self.speed
             if self.side_reached():
                 self.direction *= -1
-                offset = eu.Vector2(0, -100) # (-10 -> -100)으로 변경
+                offset = eu.Vector2(0, -10) # (-10 -> -100)으로 변경
             for alien in self:
                 alien.move(offset)
 
@@ -264,7 +265,7 @@ class PlayerShoot(Shoot):
 
     def __init__(self, x, y):
         super(PlayerShoot, self).__init__(x, y, 'Cocos/laser.png')
-        self.speed *= random.choice([-1, -1.5, -2, -2.5]) # 성능향상_3 : laser 랜덤 발사 -> 난이도 향상   
+        self.speed *= -1 # 성능향상_3 : laser 랜덤 발사 -> 난이도 향상   
         PlayerShoot.INSTANCE = self                       # (self.speed *=) -1 -> random.choice([-1, -1.5, -2, -2.5])
 
     def collide(self, other):
@@ -298,8 +299,8 @@ class HUD(cocos.layer.Layer):
     def update_lives(self, lives):
         self.lives_text.element.text = 'Lives: %s' % lives
 
-    def update_time(self, time):
-        self.time_text.element.text = 'Time: %s' % time
+    def update_time(self, remain_time):
+        self.time_text.element.text = 'Time: %s' % remain_time
 
     def show_game_over(self):
         w, h = cocos.director.director.get_window_size()
