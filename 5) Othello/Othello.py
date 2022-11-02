@@ -152,14 +152,14 @@ class GameLayer(cocos.layer.Layer):
                 bDetected = False
                 revList = []
                 if board[y+dirY][x+dirX] == turn*-1:
-                    revList.append((x+dirX, y+dirY)) ## 교수님께서 뭐라고 변경하라고 하심
+                    revList.append((x+dirX, y+dirY))
                     for xx, yy in zip(xList, yList):
                         if xx >= self.column or xx < 0 or yy >= self.row or yy < 0:
                             break
                         if board[yy][xx] == turn*-1:
                             revList.append((xx, yy))
                         if board[yy][xx] == turn:
-                            bDetected = True # 내 돌로 감싸질 경우에만 True
+                            bDetected = True
                             break
                         if board[yy][xx] == 0:
                             break
