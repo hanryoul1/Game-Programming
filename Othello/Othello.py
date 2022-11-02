@@ -36,18 +36,12 @@ class GameLayer(cocos.layer.Layer):
         self.levelDepth = self.difficulty*2+2
         self.hud = hud_layer
         self.square = 75
-        self.row = 8#4
-        self.column = 8#4
+        self.row = 8
+        self.column = 8
         self.height = self.row*self.square
         self.width = self.column*self.square
         self.table = np.arange(self.row*self.column).reshape(self.row, self.column)
 
-        '''
-        self.weight = np.array(     [   [ 50,  -10,  -10,   50], 
-                                        [-10,  -20,  -20,  -10], 
-                                        [-10,  -20,  -20,  -10], 
-                                        [ 50,  -10,  -10,   50]])
-        '''
         self.weight = np.array(     [   [ 50,  -10,   15,   15,   15,   15,  -10,   50], 
                                         [-10,  -20,  -10,  -10,  -10,  -10,  -20,  -10], 
                                         [ 15,  -10,    1,    1,    1,    1,  -10,   15], 
@@ -81,13 +75,7 @@ class GameLayer(cocos.layer.Layer):
         for y in range (0, self.row) :
             for x in range (0, self.column) :
                 self.table[y][x] = 0
-        '''
-        self.table[1][1] = GameLayer.PERSON
-        self.table[1][2] = GameLayer.COMPUTER
-        self.table[2][1] = GameLayer.COMPUTER
-        self.table[2][2] = GameLayer.PERSON
 
-        '''
         self.table[3][3] = GameLayer.PERSON
         self.table[3][4] = GameLayer.COMPUTER
         self.table[4][3] = GameLayer.COMPUTER
@@ -164,14 +152,14 @@ class GameLayer(cocos.layer.Layer):
                 bDetected = False
                 revList = []
                 if board[y+dirY][x+dirX] == turn*-1:
-                    revList.append((x+dirX, y+dirY))
+                    revList.append((x+dirX, y+dirY)) ## 교수님께서 뭐라고 변경하라고 하심
                     for xx, yy in zip(xList, yList):
                         if xx >= self.column or xx < 0 or yy >= self.row or yy < 0:
                             break
                         if board[yy][xx] == turn*-1:
                             revList.append((xx, yy))
                         if board[yy][xx] == turn:
-                            bDetected = True
+                            bDetected = True # 내 돌로 감싸질 경우에만 True
                             break
                         if board[yy][xx] == 0:
                             break
@@ -198,7 +186,6 @@ class GameLayer(cocos.layer.Layer):
             return
 
         moves = self.getMoves(GameLayer.PERSON, self.table)
-        #print(moves)
 
         if len(moves) > 0:    
             xx = x//self.square
@@ -215,7 +202,7 @@ class GameLayer(cocos.layer.Layer):
         self.turn *= -1
         self.count = 0     
             
-    def computer(self):
+    def computer(self):       
         move = self.minimax(GameLayer.COMPUTER)
 
         if len(move) > 0:
@@ -232,12 +219,18 @@ class GameLayer(cocos.layer.Layer):
         if len(moves) == 0: return moves
         
         scores = np.zeros(len(moves))
+    
         alpha = float("-inf")
         beta = float("inf")
 
         for i, move in enumerate(moves):
             boardCopy = self.getNewBoard(move[0], move[1], move[2], GameLayer.COMPUTER, np.copy(self.table))
-            scores[i] = self.maxMove(boardCopy, 1, alpha, beta)
+            #scores[i] = self.maxMove(boardCopy, 1, alpha, beta)
+            
+            if 1 >=self.levelDepth:
+                scores[i] = self.boardScore(boardCopy)
+            else:
+                scores[i] = self.minMove(boardCopy, 2, alpha, beta)
 
         maxIndex = np.argmax(scores)
 
