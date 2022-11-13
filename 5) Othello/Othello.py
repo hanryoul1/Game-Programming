@@ -67,7 +67,7 @@ class GameLayer(cocos.layer.Layer):
                 self.add(self.disk[y][x])
 
         self.setup()
-        self.turn = GameLayer.PERSON
+        self.turn = GameLayer.PERSON # -1
         self.count = 0
         self.schedule(self.update)
 
@@ -90,11 +90,11 @@ class GameLayer(cocos.layer.Layer):
         for y in range  (0, self.row) :
             for x in range  (0, self.column) :
                 if self.table[y][x] == GameLayer.COMPUTER:
-                    self.disk[y][x].color = (255, 255, 255)
+                    self.disk[y][x].color = (255, 255, 255) # white
                     self.disk[y][x].visible = True
                     computer += 1
                 elif self.table[y][x] == GameLayer.PERSON:
-                    self.disk[y][x].color = (0, 0, 0)
+                    self.disk[y][x].color = (0, 0, 0) # black
                     self.disk[y][x].visible = True
                     person += 1
                 else:
@@ -106,9 +106,10 @@ class GameLayer(cocos.layer.Layer):
         moves2 = self.getMoves(GameLayer.COMPUTER, self.table)
 
         if self.turn == GameLayer.PERSON and len(moves1) == 0:
-            self.turn *= -1
+            self.turn *= -1 # (-1) -> (1)
 
         if computer+person == self.row*self.column or (len(moves1) == 0 and len(moves2) == 0):
+            # 모든 칸이 다 채워진 경우 or 놓을 수 있는 칸이 없는 경우?
             if computer > person:
                 self.hud.show_game_over('Computer win')
             elif computer < person:
@@ -202,7 +203,7 @@ class GameLayer(cocos.layer.Layer):
         self.turn *= -1
         self.count = 0     
             
-    def computer(self):       
+    def computer(self): # Check      
         move = self.minimax(GameLayer.COMPUTER)
 
         if len(move) > 0:
@@ -213,7 +214,7 @@ class GameLayer(cocos.layer.Layer):
 
         self.turn *= -1
         
-    def minimax(self, player):
+    def minimax(self, player): # Check    
         moves = self.getMoves(player, self.table)
 
         if len(moves) == 0: return moves
@@ -226,11 +227,24 @@ class GameLayer(cocos.layer.Layer):
         for i, move in enumerate(moves):
             boardCopy = self.getNewBoard(move[0], move[1], move[2], GameLayer.COMPUTER, np.copy(self.table))
             #scores[i] = self.maxMove(boardCopy, 1, alpha, beta)
-            
+
+            """
             if 1 >=self.levelDepth:
                 scores[i] = self.boardScore(boardCopy)
             else:
                 scores[i] = self.minMove(boardCopy, 2, alpha, beta)
+            """
+
+            # difficulty = 0(Easy), 1(Normal), 2(Hard)
+            # self.levelDepth = self.difficulty*2+2
+            # self.levelDepth = 2, 4, 6
+            
+            if self.levelDepth == 2:  # (board, depth, alpha, beta)
+                scores[i] = self.minMove(boardCopy, 3, alpha, beta)
+            elif self.levelDepth == 4:
+                scores[i] = self.minMove(boardCopy, 2, alpha, beta)
+            else:
+                scores[i] = self.minMove(boardCopy, 1, alpha, beta)
 
         maxIndex = np.argmax(scores)
 
@@ -244,7 +258,7 @@ class GameLayer(cocos.layer.Layer):
 
         return table    
 
-    def maxMove(self, board, depth, alpha, beta):
+    def maxMove(self, board, depth, alpha, beta): # check
         moves = self.getMoves(GameLayer.COMPUTER, board)
         scores = np.zeros(len(moves))
 
@@ -266,7 +280,7 @@ class GameLayer(cocos.layer.Layer):
                     return scores[i]
         return max(scores)
 
-    def minMove(self, board, depth, alpha, beta):
+    def minMove(self, board, depth, alpha, beta): # check
         moves = self.getMoves(GameLayer.PERSON, board)
         scores = np.zeros(len(moves))
 
@@ -312,8 +326,8 @@ class MainMenu(Menu):
         self.font_item_selected['font_name'] = 'Times New Roman'
 
         self.selDifficulty = 0
-        self.difficulty = ['Easy', 'Normal', 'Hard']
-
+        self.difficulty = ['Easy', 'Normal', 'Hard'] # 0, 1, 2
+        
         items = list()
         items.append(MenuItem('New Game', self.start_game))
         items.append(MultipleMenuItem('Difficuly: ', self.set_difficulty, self.difficulty, 0))
