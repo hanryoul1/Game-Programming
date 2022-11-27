@@ -26,7 +26,7 @@ current_path = os.path.dirname(__file__) # 현재 파일의 위치 반환
 image_path = os.path.join(current_path, "image") # image 폴더 위치 반환
 
 # 배경 만들기
-background = pygame.image.load(os.path.join(image_path, "background.png"))
+background = pygame.image.load(os.path.join(image_path, "background2.png"))
 
 # 스테이지 만들기
 stage = pygame.image.load(os.path.join(image_path, "stage.png"))
@@ -48,7 +48,7 @@ character_to_x = 0
 character_speed = 5
 
 # 무기 만들기
-weapon = pygame.image.load(os.path.join(image_path, "weapon.png"))
+weapon = pygame.image.load(os.path.join(image_path, "weapon3.png"))
 weapon_size = weapon.get_rect().size
 weapon_width = weapon_size[0]
 
@@ -60,10 +60,10 @@ weapon_speed = 10
 
 # 공 만들기 (4개 크기에 대해 따로 처리)
 ball_images = [
-    pygame.image.load(os.path.join(image_path, "balloon1.png")),
-    pygame.image.load(os.path.join(image_path, "balloon2.png")),
-    pygame.image.load(os.path.join(image_path, "balloon3.png")),
-    pygame.image.load(os.path.join(image_path, "balloon4.png"))
+    pygame.image.load(os.path.join(image_path, "ball1_stage1.png")),
+    pygame.image.load(os.path.join(image_path, "ball2_stage1.png")),
+    pygame.image.load(os.path.join(image_path, "ball3_stage1.png")),
+    pygame.image.load(os.path.join(image_path, "ball4_stage1.png"))
 ]  
 
 # 공 크기에 따른 최초 스피드
