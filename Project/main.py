@@ -1,7 +1,7 @@
 from pygame.constants import K_RIGHT
 from stage1 import *
-# from stage2 import *
-# from stage3 import *
+from stage2 import *
+from stage3 import *
 
 # 오프닝 
 def start_menu():
@@ -102,53 +102,35 @@ def level3():
                 i = 201
                 pygame.quit()
                 break
-
-# 게임 엔딩 - 실패
-def death_screen():  
-    pygame.mixer.music.load('sound/game_over.wav')  
-    pygame.mixer.music.play(-1) 
-    pygame.mixer.music.set_volume(.4)
-
-    death_background = pygame.image.load('image/death_screen.png')
-    screen.blit(death_background, (0, 0))
-
-    pygame.display.update()
-    pygame.time.delay(4000)
-    pygame.quit()
       
 # 게임 엔딩 - 성공
 def success_screen():
     pygame.mixer.music.load('sound/game_clear.mp3')  
     pygame.mixer.music.play(-1) 
-    pygame.mixer.music.set_volume(.4)
+    pygame.mixer.music.set_volume(.9)
 
     success_background = pygame.image.load('image/success_screen.png')
     screen.blit(success_background, (0, 0))
 
     pygame.display.update()
-    pygame.time.delay(3000)
+    pygame.time.delay(7000)
     pygame.quit()
 
 # main loop
-def main_loop() :   
+def main_loop() :
+
     level1()
-    startGame()
-    runGame()
+    startGame_1()
+    runGame_1()
 
-    if "Success":
-        success_screen() 
-
-    if "Fail":
-        death_screen()
-        
-    level2()      
-    health = stage_2()              
-    if health <= 0 : death_screen()
+    level2()
+    startGame_2()
+    runGame_2()  
 
     level3()
-    health = stage_3()
-    if health <= 0 : death_screen()
+    startGame_3()
+    runGame_3()
 
-    if health > 0 : success_screen()  
+    success_screen() 
 
 start_menu()
