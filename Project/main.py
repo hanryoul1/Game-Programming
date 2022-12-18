@@ -129,8 +129,6 @@ def main_loop() :
 
     level3()
     startGame_3()
-    runGame_3()
-
-    success_screen() 
+    runGame_3() 
 
 start_menu()
